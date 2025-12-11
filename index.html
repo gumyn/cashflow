@@ -188,6 +188,10 @@
                         <div class="flex gap-4 w-full justify-center">
                             <button onclick="closeModal(false)"
                                 class="w-12 h-12 bg-red-100 text-red-500 rounded-full text-2xl border-2 border-red-300">✖</button>
+                            <button id="btn-sugar" onclick="closeModal(false, true)"
+                                class="hidden w-12 h-12 bg-pink-100 text-pink-500 rounded-full text-2xl border-2 border-pink-300">🍬</button>
+                            <button id="btn-sugar" onclick="closeModal(false, true)"
+                                class="hidden w-12 h-12 bg-pink-100 text-pink-500 rounded-full text-2xl border-2 border-pink-300">🍬</button>
                             <button id="btn-confirm" onclick="closeModal(true)"
                                 class="w-12 h-12 bg-green-100 text-green-600 rounded-full text-2xl border-2 border-green-300">✔</button>
                         </div>
@@ -253,17 +257,20 @@
         <div id="p1-hud"
             class="absolute bottom-0 left-0 right-0 h-32 bg-red-50 border-t-4 border-red-300 flex items-center justify-between px-16 transition-opacity opacity-50">
             <!-- Inventaire -->
-            <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
+            <div class="flex flex-row items-center gap-2 cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(0)">
-                <span class="text-2xl">🐔</span>
-                <span id="p1-assets" class="font-bold text-xl">0</span>
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl">🐔</span>
+                    <span id="p1-assets" class="font-bold text-xl">0</span>
+                </div>
+                <span id="p1-dentist-meter" class="text-xs text-red-400 font-bold">0/5 🦷</span>
             </div>
             <!-- Avatar & Argent -->
             <div class="flex flex-col items-center transform -translate-y-4">
                 <div
                     class="w-16 h-16 bg-red-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-1 relative">
                     🐶
-                    <div id="p1-turn-indicator" class="hidden absolute -top-12 animate-bounce text-red-500 text-4xl">👇
+                    <div id="p1-turn-indicator" class="hidden absolute -top-2 animate-bounce text-red-500 text-2xl">👇
                     </div>
                 </div>
                 <div class="bg-white px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-2">
@@ -282,16 +289,19 @@
         <div id="p2-hud"
             class="absolute top-1/2 left-0 w-[75vh] h-32 bg-blue-50 border-t-4 border-blue-300 flex items-center justify-between px-16 transition-opacity opacity-50"
             style="transform: translate(-45%, -50%) rotate(90deg); transform-origin: center;">
-            <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
+            <div class="flex flex-row items-center gap-2 cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(1)">
-                <span class="text-2xl">🐔</span>
-                <span id="p2-assets" class="font-bold text-xl">0</span>
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl">🐔</span>
+                    <span id="p2-assets" class="font-bold text-xl">0</span>
+                </div>
+                <span id="p2-dentist-meter" class="text-xs text-red-400 font-bold">0/5 🦷</span>
             </div>
             <div class="flex flex-col items-center transform -translate-y-4">
                 <div
                     class="w-16 h-16 bg-blue-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-1 relative">
                     🐱
-                    <div id="p2-turn-indicator" class="hidden absolute -top-12 animate-bounce text-blue-500 text-4xl">👇
+                    <div id="p2-turn-indicator" class="hidden absolute -top-2 animate-bounce text-blue-500 text-2xl">👇
                     </div>
                 </div>
                 <div class="bg-white px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-2">
@@ -309,16 +319,19 @@
         <div id="p3-hud"
             class="hidden absolute top-0 left-0 right-0 h-32 bg-green-50 border-t-4 border-green-300 flex items-center justify-between px-16 transition-opacity opacity-50"
             style="transform: rotate(180deg);">
-            <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
+            <div class="flex flex-row items-center gap-2 cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(2)">
-                <span class="text-2xl">🐔</span>
-                <span id="p3-assets" class="font-bold text-xl">0</span>
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl">🐔</span>
+                    <span id="p3-assets" class="font-bold text-xl">0</span>
+                </div>
+                <span id="p3-dentist-meter" class="text-xs text-red-400 font-bold">0/5 🦷</span>
             </div>
             <div class="flex flex-col items-center transform -translate-y-4">
                 <div
                     class="w-16 h-16 bg-green-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-1 relative">
                     🐸
-                    <div id="p3-turn-indicator" class="hidden absolute -top-12 animate-bounce text-green-500 text-4xl">
+                    <div id="p3-turn-indicator" class="hidden absolute -top-2 animate-bounce text-green-500 text-2xl">
                         👇</div>
                 </div>
                 <div class="bg-white px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-2">
@@ -336,16 +349,19 @@
         <div id="p4-hud"
             class="hidden absolute top-1/2 right-0 w-[75vh] h-32 bg-purple-50 border-t-4 border-purple-300 flex items-center justify-between px-16 transition-opacity opacity-50"
             style="transform: translate(45%, -50%) rotate(-90deg); transform-origin: center;">
-            <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
+            <div class="flex flex-row items-center gap-2 cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(3)">
-                <span class="text-2xl">🐔</span>
-                <span id="p4-assets" class="font-bold text-xl">0</span>
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl">🐔</span>
+                    <span id="p4-assets" class="font-bold text-xl">0</span>
+                </div>
+                <span id="p4-dentist-meter" class="text-xs text-red-400 font-bold">0/5 🦷</span>
             </div>
             <div class="flex flex-col items-center transform -translate-y-4">
                 <div
                     class="w-16 h-16 bg-purple-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-1 relative">
                     🦄
-                    <div id="p4-turn-indicator" class="hidden absolute -top-12 animate-bounce text-purple-500 text-4xl">
+                    <div id="p4-turn-indicator" class="hidden absolute -top-2 animate-bounce text-purple-500 text-2xl">
                         👇</div>
                 </div>
                 <div class="bg-white px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-2">
@@ -452,7 +468,14 @@
                 div.className = `cell ${cellData.color}`;
                 div.style.gridColumn = pos.c;
                 div.style.gridRow = pos.r;
-                div.innerHTML = `<span>${cellData.icon}</span>`;
+
+                let content = `<span>${cellData.icon}</span>`;
+                // Afficher le prix pour les assets et le poulailler
+                if (cellData.cost && (cellData.type === 'asset' || cellData.type === 'coop')) {
+                    content += `<span class="absolute bottom-1 right-1 text-xs font-bold bg-white/50 px-1 rounded-full text-green-700">${cellData.cost}</span>`;
+                }
+
+                div.innerHTML = content;
                 div.id = `cell-${index}`;
                 board.appendChild(div);
             });
@@ -669,8 +692,11 @@
                 // Dépense
                 if (data.isDentist) {
                     cost.innerHTML = `-${data.cost} <span class="coin">●</span> <br><span class="text-sm text-red-600 font-bold">DENTISTE 🦷<br>(Trop de bonbons !)</span>`;
+                    document.getElementById('btn-sugar').classList.add('hidden');
                 } else {
                     cost.innerHTML = `-${data.cost} <span class="coin">●</span>`;
+                    // Option payer 1 pièce pour éviter le dentiste
+                    document.getElementById('btn-sugar').classList.remove('hidden');
                 }
                 btnConfirm.innerHTML = '✔'; // Juste OK
                 // Cacher le bouton croix car c'est obligatoire, ou juste laisser confirmer
@@ -678,10 +704,11 @@
             }
         }
 
-        function closeModal(confirmed) {
+        function closeModal(confirmed, paySugarOption = false) {
             const modal = document.getElementById('action-modal');
             modal.classList.add('hidden');
             document.querySelector('#action-modal button:first-child').classList.remove('hidden'); // Reset cancel button
+            document.getElementById('btn-sugar').classList.add('hidden'); // Reset sugar button
 
             const p = players[currentPlayerIndex];
 
@@ -699,7 +726,13 @@
                     playSound('buy');
                 }
             } else if (currentModalAction === 'pay') {
-                if (confirmed) { // Obligatoire de toute façon
+                if (paySugarOption) {
+                    // Option "Manger un bonbon 1 pièce" sans pénalité dentiste
+                    p.money -= 1;
+                    if (p.money < 0) p.money = 0;
+                    showFloatingText("Miam ! -1💰", `token-${currentPlayerIndex}`, 'text-pink-500');
+                    playSound('pay');
+                } else if (confirmed) { // Obligatoire de toute façon
                     p.money -= currentCellData.cost;
                     if (p.money < 0) p.money = 0;
 
@@ -866,6 +899,12 @@
             players.forEach((p, idx) => {
                 document.getElementById(`p${idx + 1}-money`).innerText = p.money;
                 document.getElementById(`p${idx + 1}-assets`).innerText = p.assets;
+
+                // Update Dentist Meter
+                const meter = document.getElementById(`p${idx + 1}-dentist-meter`);
+                if (meter) {
+                    meter.innerText = `${p.expenseCount}/5 🦷`;
+                }
 
                 // Feedback visuel si proche du but
                 const dreamCont = document.getElementById(`p${idx + 1}-dream-container`);
