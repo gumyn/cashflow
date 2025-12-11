@@ -187,6 +187,57 @@
                                 class="w-12 h-12 bg-green-100 text-green-600 rounded-full text-2xl border-2 border-green-300">✔</button>
                         </div>
                     </div>
+
+                    <!-- Modal de Vente (Négociation) -->
+                    <div id="trade-modal"
+                        class="hidden absolute inset-0 bg-white/95 backdrop-blur z-30 rounded-xl flex flex-col items-center justify-center p-2 text-center">
+                        <h3 id="trade-title" class="text-xl font-bold text-blue-600 mb-2">Vendre une Poule 🐔</h3>
+
+                        <!-- Étape 1 : Clavier -->
+                        <div id="trade-step-1" class="w-full h-full flex flex-col items-center">
+                            <div class="bg-gray-100 rounded-xl p-2 mb-2 w-32 flex justify-center items-center">
+                                <span id="trade-price-display" class="text-3xl font-bold text-gray-800">0</span>
+                                <span class="coin text-xl ml-1">●</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 w-full max-w-[200px] flex-1">
+                                <button onclick="updateTradePrice(1)"
+                                    class="bg-blue-50 rounded-lg text-xl font-bold py-1">1</button>
+                                <button onclick="updateTradePrice(2)"
+                                    class="bg-blue-50 rounded-lg text-xl font-bold py-1">2</button>
+                                <button onclick="updateTradePrice(3)"
+                                    class="bg-blue-50 rounded-lg text-xl font-bold py-1">3</button>
+                                <button onclick="updateTradePrice(4)"
+                                    class="bg-blue-50 rounded-lg text-xl font-bold py-1">4</button>
+                                <button onclick="updateTradePrice(5)"
+                                    class="bg-blue-50 rounded-lg text-xl font-bold py-1">5</button>
+                                <button onclick="updateTradePrice(6)"
+                                    class="bg-blue-50 rounded-lg text-xl font-bold py-1">6</button>
+                                <button onclick="updateTradePrice(7)"
+                                    class="bg-blue-50 rounded-lg text-xl font-bold py-1">7</button>
+                                <button onclick="updateTradePrice(8)"
+                                    class="bg-blue-50 rounded-lg text-xl font-bold py-1">8</button>
+                                <button onclick="updateTradePrice(9)"
+                                    class="bg-blue-50 rounded-lg text-xl font-bold py-1">9</button>
+                                <button onclick="updateTradePrice('C')"
+                                    class="bg-red-100 text-red-500 rounded-lg text-xl font-bold py-1">C</button>
+                                <button onclick="updateTradePrice(0)"
+                                    class="bg-blue-50 rounded-lg text-xl font-bold py-1">0</button>
+                                <button onclick="confirmTradePrice()"
+                                    class="bg-green-100 text-green-600 rounded-lg text-xl font-bold py-1">OK</button>
+                            </div>
+                            <button onclick="cancelTrade()"
+                                class="mt-2 text-gray-400 text-sm underline">Annuler</button>
+                        </div>
+
+                        <!-- Étape 2 : Choix de l'acheteur -->
+                        <div id="trade-step-2" class="hidden w-full flex flex-col items-center gap-2">
+                            <p class="text-sm text-gray-500 mb-2">Qui achète ?</p>
+                            <div id="buyer-list" class="flex flex-col gap-2 w-full overflow-y-auto max-h-[200px]">
+                                <!-- Generé par JS -->
+                            </div>
+                            <button onclick="cancelTrade()" class="mt-2 text-gray-400 text-sm underline">Retour</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -197,7 +248,8 @@
         <div id="p1-hud"
             class="absolute bottom-0 left-0 right-0 h-32 bg-red-50 border-t-4 border-red-300 flex items-center justify-between px-16 transition-opacity opacity-50">
             <!-- Inventaire -->
-            <div class="flex flex-col items-center">
+            <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
+                onclick="startTrade(0)">
                 <span class="text-2xl">🐔</span>
                 <span id="p1-assets" class="font-bold text-xl">0</span>
             </div>
@@ -225,7 +277,8 @@
         <div id="p2-hud"
             class="absolute top-1/2 left-0 w-[75vh] h-32 bg-blue-50 border-t-4 border-blue-300 flex items-center justify-between px-16 transition-opacity opacity-50"
             style="transform: translate(-45%, -50%) rotate(90deg); transform-origin: center;">
-            <div class="flex flex-col items-center">
+            <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
+                onclick="startTrade(1)">
                 <span class="text-2xl">🐔</span>
                 <span id="p2-assets" class="font-bold text-xl">0</span>
             </div>
@@ -251,7 +304,8 @@
         <div id="p3-hud"
             class="hidden absolute top-0 left-0 right-0 h-32 bg-green-50 border-t-4 border-green-300 flex items-center justify-between px-16 transition-opacity opacity-50"
             style="transform: rotate(180deg);">
-            <div class="flex flex-col items-center">
+            <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
+                onclick="startTrade(2)">
                 <span class="text-2xl">🐔</span>
                 <span id="p3-assets" class="font-bold text-xl">0</span>
             </div>
@@ -277,7 +331,8 @@
         <div id="p4-hud"
             class="hidden absolute top-1/2 right-0 w-[75vh] h-32 bg-purple-50 border-t-4 border-purple-300 flex items-center justify-between px-16 transition-opacity opacity-50"
             style="transform: translate(45%, -50%) rotate(-90deg); transform-origin: center;">
-            <div class="flex flex-col items-center">
+            <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
+                onclick="startTrade(3)">
                 <span class="text-2xl">🐔</span>
                 <span id="p4-assets" class="font-bold text-xl">0</span>
             </div>
@@ -329,7 +384,7 @@
             { type: 'asset', icon: '🤖', cost: 7, income: 3, color: 'bg-green-100' },
             { type: 'expense', icon: '🍟', cost: 2, color: 'bg-red-100' },
 
-            { type: 'start', icon: '💰', color: 'bg-yellow-200' }, // Bottom Left
+            { type: 'coop', icon: '👩‍🌾', cost: 10, color: 'bg-orange-200' }, // Bottom Left
             { type: 'chance', icon: '🎁', color: 'bg-blue-100' },
             { type: 'asset', icon: '🐔', cost: 5, income: 1, color: 'bg-green-100' },
             { type: 'expense', icon: '🍭', cost: 1, color: 'bg-red-100' },
@@ -369,7 +424,8 @@
                     money: INITIAL_MONEY,
                     assets: 0, // Nombre de poules/actifs
                     pos: 0,
-                    income: 1 // Salaire de base
+                    income: 1, // Salaire de base
+                    expenseCount: 0 // Compteur pour le dentiste
                 });
                 // Afficher le HUD
                 document.getElementById(`p${i + 1}-hud`).classList.remove('hidden');
@@ -517,6 +573,12 @@
         }
 
         function triggerPayday(player) {
+            // Effet Poulailler : Ajoute une poule (actif) avant de payer
+            if (player.hasCoop) {
+                player.assets += 1;
+                showFloatingText("+1 Poule ! 🐔", `token-${currentPlayerIndex}`, 'text-green-600');
+            }
+
             // Salaire + Actifs
             const income = player.income + player.assets;
             player.money += income;
@@ -529,13 +591,13 @@
             const p = players[currentPlayerIndex];
             const cellData = BOARD_LAYOUT[p.pos % BOARD_LAYOUT.length];
 
-            if (cellData.type === 'asset') {
+            if (cellData.type === 'asset' || cellData.type === 'coop') {
                 // Opportunité d'achat
                 if (p.money >= cellData.cost) {
                     openModal('buy', cellData);
                 } else {
                     showFloatingText("Pas assez d'argent 😢", `token-${currentPlayerIndex}`, 'text-gray-500');
-                    setTimeout(nextTurn, 1500);
+                    setTimeout(nextTurn, 500);
                 }
             } else if (cellData.type === 'expense') {
                 // Paiement obligatoire
@@ -546,7 +608,7 @@
                 p.money += bonus;
                 showFloatingText(`Cadeau ! +${bonus}💰`, `token-${currentPlayerIndex}`, 'text-blue-500');
                 updateAllHUDs();
-                setTimeout(nextTurn, 1500);
+                setTimeout(nextTurn, 500);
             } else {
                 // Case départ ou vide
                 // Si c'est l'étoile, on rejoue !
@@ -558,6 +620,7 @@
                         diceBtn.innerHTML = '🎲';
                         diceBtn.disabled = false;
                         diceBtn.classList.remove('opacity-50');
+                        isAnimating = false; // FIX: Reset animation state to allow clicking again
                     }, 1000);
                 } else {
                     setTimeout(nextTurn, 1000);
@@ -591,11 +654,19 @@
 
             if (action === 'buy') {
                 // Achat Actif
-                cost.innerHTML = `-${data.cost} <span class="coin">●</span> <br><span class="text-sm text-green-600">Donne +${data.income}/tour</span>`;
+                if (data.type === 'coop') {
+                    cost.innerHTML = `-${data.cost} <span class="coin">●</span> <br><span class="text-sm text-orange-600">Poulailler : +1 Poule/tour !</span>`;
+                } else {
+                    cost.innerHTML = `-${data.cost} <span class="coin">●</span> <br><span class="text-sm text-green-600">Donne +${data.income}/tour</span>`;
+                }
                 btnConfirm.classList.remove('hidden');
             } else if (action === 'pay') {
                 // Dépense
-                cost.innerHTML = `-${data.cost} <span class="coin">●</span>`;
+                if (data.isDentist) {
+                    cost.innerHTML = `-${data.cost} <span class="coin">●</span> <br><span class="text-sm text-red-600 font-bold">DENTISTE 🦷<br>(Trop de bonbons !)</span>`;
+                } else {
+                    cost.innerHTML = `-${data.cost} <span class="coin">●</span>`;
+                }
                 btnConfirm.innerHTML = '✔'; // Juste OK
                 // Cacher le bouton croix car c'est obligatoire, ou juste laisser confirmer
                 document.querySelector('#action-modal button:first-child').classList.add('hidden');
@@ -612,15 +683,47 @@
             if (currentModalAction === 'buy') {
                 if (confirmed) {
                     p.money -= currentCellData.cost;
-                    p.assets += currentCellData.income; // On simplifie: assets = revenu sup
-                    showFloatingText("Investissement ! 🐔", `token-${currentPlayerIndex}`, 'text-green-600');
+
+                    if (currentCellData.type === 'coop') {
+                        p.hasCoop = true;
+                        showFloatingText("Poulailler acheté ! 🛖", `token-${currentPlayerIndex}`, 'text-orange-600');
+                    } else {
+                        p.assets += currentCellData.income;
+                        showFloatingText("Investissement ! 🐔", `token-${currentPlayerIndex}`, 'text-green-600');
+                    }
                     playSound('buy');
                 }
             } else if (currentModalAction === 'pay') {
                 if (confirmed) { // Obligatoire de toute façon
                     p.money -= currentCellData.cost;
                     if (p.money < 0) p.money = 0;
-                    showFloatingText("Aïe ! 💸", `token-${currentPlayerIndex}`, 'text-red-500');
+
+                    // Logique DENTISTE
+                    if (!currentCellData.isDentist) {
+                        p.expenseCount++;
+                        // Feedback visuel de sucre
+                        showFloatingText("Aïe ! 💸", `token-${currentPlayerIndex}`, 'text-red-500');
+
+                        // Si 5ème dépense, on déclenche le dentiste
+                        if (p.expenseCount >= 5) {
+                            p.expenseCount = 0; // Reset
+
+                            setTimeout(() => {
+                                openModal('pay', {
+                                    icon: '🦷',
+                                    cost: 10,
+                                    type: 'expense',
+                                    isDentist: true
+                                });
+                            }, 500);
+
+                            updateAllHUDs();
+                            return; // ON ARRÊTE LA : Le prochain closeModal (du dentiste) relancera nextTurn
+                        }
+                    } else {
+                        showFloatingText("Dents soignées ✨", `token-${currentPlayerIndex}`, 'text-blue-500');
+                    }
+
                     playSound('pay');
                 }
             }
@@ -651,6 +754,107 @@
         function nextTurn() {
             currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
             startTurn();
+        }
+
+        // --- Système de Vente (Trade) ---
+        let tradePrice = 0;
+        let isTrading = false;
+
+        function startTrade(hudPlayerIndex) {
+            // On ne peut initier un échange que pendant son tour et si c'est bien notre HUD
+            if (hudPlayerIndex !== currentPlayerIndex) return;
+            // Et si on a des assets à vendre
+            if (players[currentPlayerIndex].assets <= 0) {
+                showFloatingText("Pas de poule ! 🐔", `token-${currentPlayerIndex}`, 'text-red-500');
+                return;
+            }
+
+            isTrading = true;
+            tradePrice = 0;
+
+            // Ouvrir modal
+            document.getElementById('trade-modal').classList.remove('hidden');
+            document.getElementById('trade-step-1').classList.remove('hidden');
+            document.getElementById('trade-step-2').classList.add('hidden');
+            document.getElementById('trade-price-display').innerText = '0';
+
+            // Rotation
+            let rotation = 0;
+            if (currentPlayerIndex === 1) rotation = 90;
+            if (currentPlayerIndex === 2) rotation = 180;
+            if (currentPlayerIndex === 3) rotation = -90;
+            document.getElementById('trade-modal').style.transform = `rotate(${rotation}deg)`;
+        }
+
+        function updateTradePrice(val) {
+            const display = document.getElementById('trade-price-display');
+
+            if (val === 'C') {
+                tradePrice = 0;
+            } else {
+                // Concaténer
+                let currentStr = tradePrice.toString();
+                if (currentStr === '0') currentStr = '';
+                currentStr += val;
+                tradePrice = parseInt(currentStr);
+
+                // Limite max (pièces du plus riche adverse)
+                const maxMoney = Math.max(...players.filter((p, i) => i !== currentPlayerIndex).map(p => p.money));
+                if (tradePrice > maxMoney) {
+                    tradePrice = maxMoney;
+                }
+            }
+            display.innerText = tradePrice;
+        }
+
+        function confirmTradePrice() {
+            if (tradePrice <= 0) return;
+
+            document.getElementById('trade-step-1').classList.add('hidden');
+            document.getElementById('trade-step-2').classList.remove('hidden');
+
+            const list = document.getElementById('buyer-list');
+            list.innerHTML = '';
+
+            players.forEach((p, idx) => {
+                if (idx !== currentPlayerIndex) {
+                    const btn = document.createElement('button');
+                    const canAfford = p.money >= tradePrice;
+                    btn.className = `w-full p-2 rounded-lg border-2 flex items-center justify-between ${canAfford ? 'bg-green-50 border-green-200' : 'bg-gray-100 border-gray-200 opacity-50'}`;
+                    btn.disabled = !canAfford;
+                    btn.innerHTML = `
+                        <span class="text-xl">${p.icon} Joueur ${idx + 1}</span>
+                        <span class="font-bold ${canAfford ? 'text-green-600' : 'text-gray-400'}">${tradePrice} <span class="coin">●</span></span>
+                    `;
+                    if (canAfford) {
+                        btn.onclick = () => executeTrade(idx);
+                    }
+                    list.appendChild(btn);
+                }
+            });
+        }
+
+        function executeTrade(buyerIdx) {
+            const seller = players[currentPlayerIndex];
+            const buyer = players[buyerIdx];
+
+            // Transaction
+            buyer.money -= tradePrice;
+            seller.money += tradePrice;
+            seller.assets -= 1;
+            buyer.assets += 1;
+
+            showFloatingText(`Vendu ! +${tradePrice}💰`, `token-${currentPlayerIndex}`, 'text-green-600');
+            showFloatingText(`Acheté ! 🐔`, `token-${buyerIdx}`, 'text-green-600');
+            playSound('coin');
+
+            cancelTrade(); // Fermer modal
+            updateAllHUDs();
+        }
+
+        function cancelTrade() {
+            document.getElementById('trade-modal').classList.add('hidden');
+            isTrading = false;
         }
 
         function updateAllHUDs() {
