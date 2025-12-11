@@ -262,6 +262,10 @@
             <div class="flex flex-row items-center gap-2 cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(0)">
                 <div class="flex flex-col items-center">
+                    <span class="text-2xl">👩‍🌾</span>
+                    <span id="p1-farmer-meter" class="font-bold text-xl">0</span>
+                </div>
+                <div class="flex flex-col items-center">
                     <span class="text-2xl">🐔</span>
                     <span id="p1-assets" class="font-bold text-xl">0</span>
                 </div>
@@ -297,6 +301,10 @@
             <div class="flex flex-row items-center gap-2 cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(1)">
                 <div class="flex flex-col items-center">
+                    <span class="text-2xl">👩‍🌾</span>
+                    <span id="p2-farmer-meter" class="font-bold text-xl">0</span>
+                </div>
+                <div class="flex flex-col items-center">
                     <span class="text-2xl">🐔</span>
                     <span id="p2-assets" class="font-bold text-xl">0</span>
                 </div>
@@ -330,6 +338,10 @@
             <div class="flex flex-row items-center gap-2 cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(2)">
                 <div class="flex flex-col items-center">
+                    <span class="text-2xl">👩‍🌾</span>
+                    <span id="p3-farmer-meter" class="font-bold text-xl">0</span>
+                </div>
+                <div class="flex flex-col items-center">
                     <span class="text-2xl">🐔</span>
                     <span id="p3-assets" class="font-bold text-xl">0</span>
                 </div>
@@ -362,6 +374,10 @@
             style="transform: translate(45%, -50%) rotate(-90deg); transform-origin: center;">
             <div class="flex flex-row items-center gap-2 cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(3)">
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl">👩‍🌾</span>
+                    <span id="p4-farmer-meter" class="font-bold text-xl">0</span>
+                </div>
                 <div class="flex flex-col items-center">
                     <span class="text-2xl">🐔</span>
                     <span id="p4-assets" class="font-bold text-xl">0</span>
@@ -460,7 +476,8 @@
                     assets: 0, // Nombre de poules/actifs
                     pos: 0,
                     income: 1, // Salaire de base
-                    expenseCount: 0 // Compteur pour le dentiste
+                    expenseCount: 0, // Compteur pour le dentiste
+                    coopCount: 0 // Compteur de poulaillers
                 });
                 // Afficher le HUD
                 document.getElementById(`p${i + 1}-hud`).classList.remove('hidden');
@@ -615,10 +632,13 @@
         }
 
         function triggerPayday(player) {
-            // Effet Poulailler : Ajoute une poule (actif) avant de payer
-            if (player.hasCoop) {
-                player.assets += 1;
-                showFloatingText("+1 Poule ! 🐔", `token-${currentPlayerIndex}`, 'text-green-600');
+            // Effet Poulailler : Pour chaque poulailler, on gagne le nombre de poulailler en plus de poules
+            // Ex: 1 poulailler -> 1 = +1 poule
+            // Ex: 2 poulaillers -> 2 = +2 poules
+            if (player.coopCount > 0) {
+                const bonusChickens = player.coopCount;
+                player.assets += player.coopCount;
+                showFloatingText(`+${bonusChickens} Poules ! 🐔`, `token-${currentPlayerIndex}`, 'text-orange-600');
             }
 
             // Salaire + Actifs
@@ -691,7 +711,7 @@
             if (action === 'buy') {
                 // Achat Actif
                 if (data.type === 'coop') {
-                    cost.innerHTML = `-${data.cost} <span class="coin">●</span> <br><span class="text-sm text-orange-600">Poulailler : +1 Poule/tour !</span>`;
+                    cost.innerHTML = `-${data.cost} <span class="coin">●</span> <br><span class="text-sm text-orange-600">Poulailler : Boost Poules !</span>`;
                 } else {
                     cost.innerHTML = `-${data.cost} <span class="coin">●</span> <br><span class="text-sm text-green-600">Donne +${data.income}/tour</span>`;
                 }
@@ -744,8 +764,10 @@
                 if (confirmed) {
                     p.money -= currentCellData.cost;
 
+                    p.money -= currentCellData.cost;
+
                     if (currentCellData.type === 'coop') {
-                        p.hasCoop = true;
+                        p.coopCount++;
                         showFloatingText("Poulailler acheté ! 🛖", `token-${currentPlayerIndex}`, 'text-orange-600');
                     } else {
                         p.assets += currentCellData.income;
@@ -932,7 +954,13 @@
                 // Update Dentist Meter
                 const meter = document.getElementById(`p${idx + 1}-dentist-meter`);
                 if (meter) {
-                    meter.innerText = `${p.expenseCount}`;
+                    meter.innerText = `${p.expenseCount}`; // Juste le chiffre
+                }
+
+                // Update Farmer Meter (Poulaillers)
+                const farmerMeter = document.getElementById(`p${idx + 1}-farmer-meter`);
+                if (farmerMeter) {
+                    farmerMeter.innerText = `${p.coopCount}`;
                 }
 
                 // Feedback visuel si proche du but
