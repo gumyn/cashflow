@@ -115,7 +115,7 @@
     </style>
 </head>
 
-<body class="bg-blue-50 h-screen w-screen relative overflow-hidden">
+<body class="bg-blue-50 h-[100dvh] w-screen relative overflow-hidden">
 
     <!-- Écran de configuration (Combien de joueurs ?) -->
     <div id="setup-screen" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center p-4">
@@ -160,7 +160,7 @@
     <div id="game-container" class="hidden w-full h-full relative">
 
         <!-- PLATEAU CENTRAL (Grille) -->
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none pb-24 md:pb-0">
             <div id="board" class="board-grid bg-white shadow-2xl rounded-xl p-2 pointer-events-auto">
                 <!-- Les cases seront générées par JS -->
                 <div id="center-zone" class="center-zone relative">
