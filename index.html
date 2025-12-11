@@ -59,6 +59,30 @@
             animation: pop 0.3s ease-in-out;
         }
 
+        @keyframes jump {
+            0% {
+                transform: translateY(0) scale(1.1, 0.9);
+                animation-timing-function: ease-out;
+            }
+
+            50% {
+                transform: translateY(-20px) scale(0.95, 1.05);
+                animation-timing-function: ease-in;
+            }
+
+            100% {
+                transform: translateY(0) scale(1.1, 0.9);
+            }
+        }
+
+        .token-jump {
+            animation: jump 0.8s infinite;
+            z-index: 50 !important;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.8) !important;
+            border-color: #fbbf24 !important;
+            border-width: 3px !important;
+        }
+
         /* Design du plateau central */
         .board-grid {
             display: grid;
@@ -567,6 +591,16 @@
                     hud.classList.add('opacity-30');
                     hud.classList.remove('opacity-70', 'scale-105', 'z-20');
                     indicator.classList.add('hidden');
+                }
+
+                // Animer le pion sur le plateau
+                const token = document.getElementById(`token-${idx}`);
+                if (token) {
+                    if (idx === currentPlayerIndex) {
+                        token.classList.add('token-jump');
+                    } else {
+                        token.classList.remove('token-jump');
+                    }
                 }
             });
 
