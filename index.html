@@ -105,6 +105,7 @@
             align-items: center;
             justify-content: center;
             border: 4px dashed #cbd5e1;
+            /* transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); */
         }
 
         .coin {
@@ -134,7 +135,7 @@
             <button onclick="startGame(4)"
                 class="w-20 h-20 rounded-2xl bg-purple-100 hover:bg-purple-200 border-4 border-purple-300 flex flex-col items-center justify-center text-3xl transition transform hover:scale-110">
                 <span>4</span>
-                <span class="text-sm">👶x4</span>
+                <span class="text-sm">👶👶👶👶</span>
             </button>
         </div>
         <p class="text-gray-400 text-center max-w-md">
@@ -162,7 +163,7 @@
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div id="board" class="board-grid bg-white shadow-2xl rounded-xl p-2 pointer-events-auto">
                 <!-- Les cases seront générées par JS -->
-                <div class="center-zone relative">
+                <div id="center-zone" class="center-zone relative">
                     <!-- Zone centrale : Le Dé et les infos -->
                     <div id="dice-container" class="text-center">
                         <button id="dice-btn" onclick="rollDice()"
@@ -458,6 +459,14 @@
             diceBtn.innerHTML = '🎲';
             diceBtn.disabled = false;
             diceBtn.classList.remove('opacity-50');
+
+            // Rotation de la zone centrale vers le joueur actif
+            const centerZone = document.getElementById('center-zone');
+            let rotation = 0;
+            if (currentPlayerIndex === 1) rotation = 90;
+            if (currentPlayerIndex === 2) rotation = 180;
+            if (currentPlayerIndex === 3) rotation = -90;
+            centerZone.style.transform = `rotate(${rotation}deg)`;
         }
 
         function rollDice() {
@@ -540,7 +549,19 @@
                 setTimeout(nextTurn, 1500);
             } else {
                 // Case départ ou vide
-                setTimeout(nextTurn, 1000);
+                // Si c'est l'étoile, on rejoue !
+                if (cellData.icon === '⭐') {
+                    showFloatingText("Rejoue ! 🎲", `token-${currentPlayerIndex}`, 'text-yellow-500');
+                    playSound('coin');
+                    setTimeout(() => {
+                        const diceBtn = document.getElementById('dice-btn');
+                        diceBtn.innerHTML = '🎲';
+                        diceBtn.disabled = false;
+                        diceBtn.classList.remove('opacity-50');
+                    }, 1000);
+                } else {
+                    setTimeout(nextTurn, 1000);
+                }
             }
         }
 
@@ -561,12 +582,12 @@
             icon.innerHTML = data.icon;
             modal.classList.remove('hidden');
 
-            // Rotation de la modale vers le joueur actif
-            let rotation = 0;
-            if (currentPlayerIndex === 1) rotation = 90;
-            if (currentPlayerIndex === 2) rotation = 180;
-            if (currentPlayerIndex === 3) rotation = -90;
-            modal.style.transform = `rotate(${rotation}deg)`;
+            // // Rotation de la modale vers le joueur actif
+            // let rotation = 0;
+            // if (currentPlayerIndex === 1) rotation = 90;
+            // if (currentPlayerIndex === 2) rotation = 180;
+            // if (currentPlayerIndex === 3) rotation = -90;
+            // modal.style.transform = `rotate(${rotation}deg)`;
 
             if (action === 'buy') {
                 // Achat Actif
