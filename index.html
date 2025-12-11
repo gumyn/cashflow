@@ -265,7 +265,10 @@
                     <span class="text-2xl">🐔</span>
                     <span id="p1-assets" class="font-bold text-xl">0</span>
                 </div>
-                <span id="p1-dentist-meter" class="text-xs text-red-400 font-bold">0/5 🦷</span>
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl">🦷</span>
+                    <span id="p1-dentist-meter" class="font-bold text-xl">0</span>
+                </div>
             </div>
             <!-- Avatar & Argent -->
             <div class="flex flex-col items-center transform -translate-y-4">
@@ -283,7 +286,7 @@
             <!-- Objectif -->
             <div class="flex flex-col items-center opacity-50 grayscale" id="p1-dream-container">
                 <span class="text-3xl">🏰</span>
-                <span class="font-bold text-sm text-gray-500">15<span class="coin">●</span></span>
+                <span class="font-bold text-sm text-gray-500">100<span class="coin">●</span></span>
             </div>
         </div>
 
@@ -297,7 +300,10 @@
                     <span class="text-2xl">🐔</span>
                     <span id="p2-assets" class="font-bold text-xl">0</span>
                 </div>
-                <span id="p2-dentist-meter" class="text-xs text-red-400 font-bold">0/5 🦷</span>
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl">🦷</span>
+                    <span id="p2-dentist-meter" class="font-bold text-xl">0</span>
+                </div>
             </div>
             <div class="flex flex-col items-center transform -translate-y-4">
                 <div
@@ -313,7 +319,7 @@
             </div>
             <div class="flex flex-col items-center opacity-50 grayscale" id="p2-dream-container">
                 <span class="text-3xl">🚀</span>
-                <span class="font-bold text-sm text-gray-500">15<span class="coin">●</span></span>
+                <span class="font-bold text-sm text-gray-500">100<span class="coin">●</span></span>
             </div>
         </div>
 
@@ -327,7 +333,10 @@
                     <span class="text-2xl">🐔</span>
                     <span id="p3-assets" class="font-bold text-xl">0</span>
                 </div>
-                <span id="p3-dentist-meter" class="text-xs text-red-400 font-bold">0/5 🦷</span>
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl">🦷</span>
+                    <span id="p3-dentist-meter" class="font-bold text-xl">0</span>
+                </div>
             </div>
             <div class="flex flex-col items-center transform -translate-y-4">
                 <div
@@ -343,7 +352,7 @@
             </div>
             <div class="flex flex-col items-center opacity-50 grayscale" id="p3-dream-container">
                 <span class="text-3xl">🦕</span>
-                <span class="font-bold text-sm text-gray-500">15<span class="coin">●</span></span>
+                <span class="font-bold text-sm text-gray-500">100<span class="coin">●</span></span>
             </div>
         </div>
 
@@ -357,7 +366,10 @@
                     <span class="text-2xl">🐔</span>
                     <span id="p4-assets" class="font-bold text-xl">0</span>
                 </div>
-                <span id="p4-dentist-meter" class="text-xs text-red-400 font-bold">0/5 🦷</span>
+                <div class="flex flex-col items-center">
+                    <span class="text-2xl">🦷</span>
+                    <span id="p4-dentist-meter" class="font-bold text-xl">0</span>
+                </div>
             </div>
             <div class="flex flex-col items-center transform -translate-y-4">
                 <div
@@ -373,7 +385,7 @@
             </div>
             <div class="flex flex-col items-center opacity-50 grayscale" id="p4-dream-container">
                 <span class="text-3xl">🎠</span>
-                <span class="font-bold text-sm text-gray-500">15<span class="coin">●</span></span>
+                <span class="font-bold text-sm text-gray-500">100<span class="coin">●</span></span>
             </div>
         </div>
     </div>
@@ -383,7 +395,7 @@
 
     <script>
         // --- Configuration du Jeu ---
-        const DREAM_COST = 15;
+        const DREAM_COST = 100;
         const INITIAL_MONEY = 4;
 
         // Types de cases: 
@@ -704,7 +716,7 @@
 
                     const p = players[currentPlayerIndex];
                     if (p.money >= data.cost) {
-                        btnConfirm.innerHTML = `🥦 Payer<br><span class="text-xs">-${data.cost}●</span>`;
+                        btnConfirm.innerHTML = `🥦 Payer<br><span class="text-2xl">-${data.cost}●</span>`;
                         btnConfirm.classList.remove('hidden');
                         btnConfirm.disabled = false;
                         btnConfirm.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -920,7 +932,7 @@
                 // Update Dentist Meter
                 const meter = document.getElementById(`p${idx + 1}-dentist-meter`);
                 if (meter) {
-                    meter.innerText = `${p.expenseCount}/5 🦷`;
+                    meter.innerText = `${p.expenseCount}`;
                 }
 
                 // Feedback visuel si proche du but
