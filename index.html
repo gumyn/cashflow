@@ -62,8 +62,8 @@
             gap: 4px;
             width: 100%;
             height: 100%;
-            max-width: 500px;
-            max-height: 500px;
+            max-width: 95vmin;
+            max-height: 95vmin;
         }
 
         /* Cases du chemin (boucle extérieure) */
@@ -121,21 +121,21 @@
     <div id="setup-screen" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center p-4">
         <h1 class="text-4xl text-blue-600 font-bold mb-8 text-center">La Course aux Rêves 🏰</h1>
         <p class="text-xl text-gray-500 mb-6">Combien d'enfants jouent ?</p>
-        <div class="flex gap-4 mb-12">
+        <div class="flex gap-2 md:gap-4 mb-8 md:mb-12">
             <button onclick="startGame(2)"
-                class="w-20 h-20 rounded-2xl bg-blue-100 hover:bg-blue-200 border-4 border-blue-300 flex flex-col items-center justify-center text-3xl transition transform hover:scale-110">
+                class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-blue-100 hover:bg-blue-200 border-4 border-blue-300 flex flex-col items-center justify-center text-2xl md:text-3xl transition transform hover:scale-110">
                 <span>2</span>
-                <span class="text-sm">👶👶</span>
+                <span class="text-xs md:text-sm">👶👶</span>
             </button>
             <button onclick="startGame(3)"
-                class="w-20 h-20 rounded-2xl bg-green-100 hover:bg-green-200 border-4 border-green-300 flex flex-col items-center justify-center text-3xl transition transform hover:scale-110">
+                class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-green-100 hover:bg-green-200 border-4 border-green-300 flex flex-col items-center justify-center text-2xl md:text-3xl transition transform hover:scale-110">
                 <span>3</span>
-                <span class="text-sm">👶👶👶</span>
+                <span class="text-xs md:text-sm">👶×3</span>
             </button>
             <button onclick="startGame(4)"
-                class="w-20 h-20 rounded-2xl bg-purple-100 hover:bg-purple-200 border-4 border-purple-300 flex flex-col items-center justify-center text-3xl transition transform hover:scale-110">
+                class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-purple-100 hover:bg-purple-200 border-4 border-purple-300 flex flex-col items-center justify-center text-2xl md:text-3xl transition transform hover:scale-110">
                 <span>4</span>
-                <span class="text-sm">👶👶👶👶</span>
+                <span class="text-xs md:text-sm">👶×4</span>
             </button>
         </div>
         <p class="text-gray-400 text-center max-w-md">
@@ -246,111 +246,119 @@
 
         <!-- Joueur 1 (Bas) -->
         <div id="p1-hud"
-            class="absolute bottom-0 left-0 right-0 h-32 bg-red-50 border-t-4 border-red-300 flex items-center justify-between px-16 transition-opacity opacity-50">
+            class="absolute bottom-0 left-0 right-0 h-20 md:h-32 bg-red-50 border-t-4 border-red-300 flex items-center justify-between px-4 md:px-16 transition-opacity opacity-50">
             <!-- Inventaire -->
             <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(0)">
-                <span class="text-2xl">🐔</span>
-                <span id="p1-assets" class="font-bold text-xl">0</span>
+                <span class="text-xl md:text-2xl">🐔</span>
+                <span id="p1-assets" class="font-bold text-lg md:text-xl">0</span>
             </div>
             <!-- Avatar & Argent -->
-            <div class="flex flex-col items-center transform -translate-y-4">
+            <div class="flex flex-col items-center transform -translate-y-2 md:-translate-y-4">
                 <div
-                    class="w-16 h-16 bg-red-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-1 relative">
+                    class="w-12 h-12 md:w-16 md:h-16 bg-red-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-2xl md:text-3xl mb-1 relative">
                     🐶
-                    <div id="p1-turn-indicator" class="hidden absolute -top-12 animate-bounce text-red-500 text-4xl">👇
+                    <div id="p1-turn-indicator"
+                        class="hidden absolute -top-8 md:-top-12 animate-bounce text-red-500 text-3xl md:text-4xl">👇
                     </div>
                 </div>
-                <div class="bg-white px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-2">
-                    <span class="coin text-xl">●</span>
-                    <span id="p1-money" class="font-bold text-2xl">5</span>
+                <div
+                    class="bg-white px-2 md:px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-1 md:gap-2">
+                    <span class="coin text-lg md:text-xl">●</span>
+                    <span id="p1-money" class="font-bold text-xl md:text-2xl">5</span>
                 </div>
             </div>
             <!-- Objectif -->
             <div class="flex flex-col items-center opacity-50 grayscale" id="p1-dream-container">
-                <span class="text-3xl">🏰</span>
-                <span class="font-bold text-sm text-gray-500">15<span class="coin">●</span></span>
+                <span class="text-2xl md:text-3xl">🏰</span>
+                <span class="font-bold text-xs md:text-sm text-gray-500">15<span class="coin">●</span></span>
             </div>
         </div>
 
         <!-- Joueur 2 (Gauche) - Rotation 90deg -->
         <div id="p2-hud"
-            class="absolute top-1/2 left-0 w-[75vh] h-32 bg-blue-50 border-t-4 border-blue-300 flex items-center justify-between px-16 transition-opacity opacity-50"
+            class="absolute top-1/2 left-0 w-[80vh] md:w-[75vh] h-20 md:h-32 bg-blue-50 border-t-4 border-blue-300 flex items-center justify-between px-4 md:px-16 transition-opacity opacity-50"
             style="transform: translate(-45%, -50%) rotate(90deg); transform-origin: center;">
             <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(1)">
-                <span class="text-2xl">🐔</span>
-                <span id="p2-assets" class="font-bold text-xl">0</span>
+                <span class="text-xl md:text-2xl">🐔</span>
+                <span id="p2-assets" class="font-bold text-lg md:text-xl">0</span>
             </div>
-            <div class="flex flex-col items-center transform -translate-y-4">
+            <div class="flex flex-col items-center transform -translate-y-2 md:-translate-y-4">
                 <div
-                    class="w-16 h-16 bg-blue-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-1 relative">
+                    class="w-12 h-12 md:w-16 md:h-16 bg-blue-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-2xl md:text-3xl mb-1 relative">
                     🐱
-                    <div id="p2-turn-indicator" class="hidden absolute -top-12 animate-bounce text-blue-500 text-4xl">👇
+                    <div id="p2-turn-indicator"
+                        class="hidden absolute -top-8 md:-top-12 animate-bounce text-blue-500 text-3xl md:text-4xl">👇
                     </div>
                 </div>
-                <div class="bg-white px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-2">
-                    <span class="coin text-xl">●</span>
-                    <span id="p2-money" class="font-bold text-2xl">5</span>
+                <div
+                    class="bg-white px-2 md:px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-1 md:gap-2">
+                    <span class="coin text-lg md:text-xl">●</span>
+                    <span id="p2-money" class="font-bold text-xl md:text-2xl">5</span>
                 </div>
             </div>
             <div class="flex flex-col items-center opacity-50 grayscale" id="p2-dream-container">
-                <span class="text-3xl">🚀</span>
-                <span class="font-bold text-sm text-gray-500">15<span class="coin">●</span></span>
+                <span class="text-2xl md:text-3xl">🚀</span>
+                <span class="font-bold text-xs md:text-sm text-gray-500">15<span class="coin">●</span></span>
             </div>
         </div>
 
         <!-- Joueur 3 (Haut) - Rotation 180deg -->
         <div id="p3-hud"
-            class="hidden absolute top-0 left-0 right-0 h-32 bg-green-50 border-t-4 border-green-300 flex items-center justify-between px-16 transition-opacity opacity-50"
+            class="hidden absolute top-0 left-0 right-0 h-20 md:h-32 bg-green-50 border-t-4 border-green-300 flex items-center justify-between px-4 md:px-16 transition-opacity opacity-50"
             style="transform: rotate(180deg);">
             <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(2)">
-                <span class="text-2xl">🐔</span>
-                <span id="p3-assets" class="font-bold text-xl">0</span>
+                <span class="text-xl md:text-2xl">🐔</span>
+                <span id="p3-assets" class="font-bold text-lg md:text-xl">0</span>
             </div>
-            <div class="flex flex-col items-center transform -translate-y-4">
+            <div class="flex flex-col items-center transform -translate-y-2 md:-translate-y-4">
                 <div
-                    class="w-16 h-16 bg-green-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-1 relative">
+                    class="w-12 h-12 md:w-16 md:h-16 bg-green-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-2xl md:text-3xl mb-1 relative">
                     🐸
-                    <div id="p3-turn-indicator" class="hidden absolute -top-12 animate-bounce text-green-500 text-4xl">
+                    <div id="p3-turn-indicator"
+                        class="hidden absolute -top-8 md:-top-12 animate-bounce text-green-500 text-3xl md:text-4xl">
                         👇</div>
                 </div>
-                <div class="bg-white px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-2">
-                    <span class="coin text-xl">●</span>
-                    <span id="p3-money" class="font-bold text-2xl">5</span>
+                <div
+                    class="bg-white px-2 md:px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-1 md:gap-2">
+                    <span class="coin text-lg md:text-xl">●</span>
+                    <span id="p3-money" class="font-bold text-xl md:text-2xl">5</span>
                 </div>
             </div>
             <div class="flex flex-col items-center opacity-50 grayscale" id="p3-dream-container">
-                <span class="text-3xl">🦕</span>
-                <span class="font-bold text-sm text-gray-500">15<span class="coin">●</span></span>
+                <span class="text-2xl md:text-3xl">🦕</span>
+                <span class="font-bold text-xs md:text-sm text-gray-500">15<span class="coin">●</span></span>
             </div>
         </div>
 
         <!-- Joueur 4 (Droite) - Rotation -90deg -->
         <div id="p4-hud"
-            class="hidden absolute top-1/2 right-0 w-[75vh] h-32 bg-purple-50 border-t-4 border-purple-300 flex items-center justify-between px-16 transition-opacity opacity-50"
+            class="hidden absolute top-1/2 right-0 w-[80vh] md:w-[75vh] h-20 md:h-32 bg-purple-50 border-t-4 border-purple-300 flex items-center justify-between px-4 md:px-16 transition-opacity opacity-50"
             style="transform: translate(45%, -50%) rotate(-90deg); transform-origin: center;">
             <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(3)">
-                <span class="text-2xl">🐔</span>
-                <span id="p4-assets" class="font-bold text-xl">0</span>
+                <span class="text-xl md:text-2xl">🐔</span>
+                <span id="p4-assets" class="font-bold text-lg md:text-xl">0</span>
             </div>
-            <div class="flex flex-col items-center transform -translate-y-4">
+            <div class="flex flex-col items-center transform -translate-y-2 md:-translate-y-4">
                 <div
-                    class="w-16 h-16 bg-purple-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-1 relative">
+                    class="w-12 h-12 md:w-16 md:h-16 bg-purple-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-2xl md:text-3xl mb-1 relative">
                     🦄
-                    <div id="p4-turn-indicator" class="hidden absolute -top-12 animate-bounce text-purple-500 text-4xl">
+                    <div id="p4-turn-indicator"
+                        class="hidden absolute -top-8 md:-top-12 animate-bounce text-purple-500 text-3xl md:text-4xl">
                         👇</div>
                 </div>
-                <div class="bg-white px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-2">
-                    <span class="coin text-xl">●</span>
-                    <span id="p4-money" class="font-bold text-2xl">5</span>
+                <div
+                    class="bg-white px-2 md:px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-1 md:gap-2">
+                    <span class="coin text-lg md:text-xl">●</span>
+                    <span id="p4-money" class="font-bold text-xl md:text-2xl">5</span>
                 </div>
             </div>
             <div class="flex flex-col items-center opacity-50 grayscale" id="p4-dream-container">
-                <span class="text-3xl">🎠</span>
-                <span class="font-bold text-sm text-gray-500">15<span class="coin">●</span></span>
+                <span class="text-2xl md:text-3xl">🎠</span>
+                <span class="font-bold text-xs md:text-sm text-gray-500">15<span class="coin">●</span></span>
             </div>
         </div>
     </div>
