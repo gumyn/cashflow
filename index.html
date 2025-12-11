@@ -693,6 +693,9 @@
                     btnSugar.classList.add('hidden');
                     btnConfirm.innerHTML = '✔';
                     btnConfirm.classList.remove('hidden');
+                    btnConfirm.disabled = false;
+                    btnConfirm.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
                     // Choix : Manger (Gratuit, +Dentiste) ou Payer (Safe)
                     cost.innerHTML = `Choisis !`;
 
@@ -707,11 +710,9 @@
                         btnConfirm.classList.remove('opacity-50', 'cursor-not-allowed');
                     } else {
                         // Pas assez d'argent : Forcé de manger le bonbon
-                        btnConfirm.innerHTML = `🥦 Payer<br><span class="text-xs">-${data.cost}●</span>`;
-                        btnConfirm.classList.remove('hidden');
-                        btnConfirm.disabled = true;
-                        btnConfirm.classList.add('opacity-50', 'cursor-not-allowed');
-                        cost.innerHTML += `<br><span class="text-xs text-red-400">(Pas assez de sous !)</span>`;
+                        // On CACHE le bouton payer pour être clair
+                        btnConfirm.classList.add('hidden');
+                        cost.innerHTML += `<br><span class="text-xs text-red-500 font-bold">Pas assez de sous !<br>Obligé de manger ! 🍬</span>`;
                     }
                 }
                 // Cacher le bouton croix car c'est obligatoire
