@@ -162,7 +162,7 @@
     </div>
 
     <!-- Le Plateau de Jeu -->
-    <div id="game-container" class="top-10 hidden w-full h-full relative">
+    <div id="game-container" class="top-0 hidden w-full h-full relative">
 
         <!-- PLATEAU CENTRAL (Grille) -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -731,38 +731,39 @@
                 }
             } else if (currentModalAction === 'pay') {
                 if (paySugarOption) {
-                    // Option "Manger un bonbon 1 pièce" sans pénalité dentiste
-                    p.money -= 1;
-                    if (p.money < 0) p.money = 0;
-                    showFloatingText("Miam ! -1💰", `token-${currentPlayerIndex}`, 'text-pink-500');
+                    // Option "Manger un bonbon (Gratuit)" MAIS pénalité dentiste
+                    // Coût : 0
+                    p.expenseCount++;
+                    showFloatingText("Miam ! 🍬", `token-${currentPlayerIndex}`, 'text-pink-500');
                     playSound('pay');
-                } else if (confirmed) { // Obligatoire de toute façon
+
+                    // Si 5ème dépense, on déclenche le dentiste
+                    if (p.expenseCount >= 5) {
+                        p.expenseCount = 0; // Reset
+
+                        setTimeout(() => {
+                            openModal('pay', {
+                                icon: '🦷',
+                                cost: 10,
+                                type: 'expense',
+                                isDentist: true
+                            });
+                        }, 500);
+
+                        updateAllHUDs();
+                        return; // ON ARRÊTE LA
+                    }
+
+                } else if (confirmed) {
+                    // Option "Payer pour être safe" (🥦)
                     p.money -= currentCellData.cost;
                     if (p.money < 0) p.money = 0;
 
-                    // Logique DENTISTE
+                    // Logique DENTISTE : Pas d'augmentation
                     if (!currentCellData.isDentist) {
-                        p.expenseCount++;
-                        // Feedback visuel de sucre
-                        showFloatingText("Aïe ! 💸", `token-${currentPlayerIndex}`, 'text-red-500');
-
-                        // Si 5ème dépense, on déclenche le dentiste
-                        if (p.expenseCount >= 5) {
-                            p.expenseCount = 0; // Reset
-
-                            setTimeout(() => {
-                                openModal('pay', {
-                                    icon: '🦷',
-                                    cost: 10,
-                                    type: 'expense',
-                                    isDentist: true
-                                });
-                            }, 500);
-
-                            updateAllHUDs();
-                            return; // ON ARRÊTE LA : Le prochain closeModal (du dentiste) relancera nextTurn
-                        }
+                        showFloatingText("Safe ! 🥦", `token-${currentPlayerIndex}`, 'text-green-500');
                     } else {
+                        // C'était le dentiste lui-même, on a payé
                         showFloatingText("Dents soignées ✨", `token-${currentPlayerIndex}`, 'text-blue-500');
                     }
 
