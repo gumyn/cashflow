@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
     <title>La Course aux Rêves - Cashflow Kids</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
@@ -14,9 +15,13 @@
             font-family: 'Fredoka', sans-serif;
             overflow: hidden;
             /* Empêcher le scroll pour l'expérience "app" */
-            touch-action: manipulation;
+            touch-action: none;
+            /* Plus strict que manipulation pour un jeu */
             user-select: none;
             -webkit-user-select: none;
+            position: fixed;
+            /* Force le body à ne pas scroller du tout */
+            inset: 0;
         }
 
         /* Animations */
@@ -115,7 +120,7 @@
     </style>
 </head>
 
-<body class="bg-blue-50 h-screen w-screen relative overflow-hidden">
+<body class="bg-blue-50 fixed inset-0 overflow-hidden">
 
     <!-- Écran de configuration (Combien de joueurs ?) -->
     <div id="setup-screen" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center p-4">
@@ -246,7 +251,7 @@
 
         <!-- Joueur 1 (Bas) -->
         <div id="p1-hud"
-            class="absolute bottom-24 left-0 right-0 h-32 bg-red-50 border-t-4 border-red-300 flex items-center justify-between px-16 transition-opacity opacity-50">
+            class="absolute bottom-0 left-0 right-0 h-32 bg-red-50 border-t-4 border-red-300 flex items-center justify-between px-16 transition-opacity opacity-50">
             <!-- Inventaire -->
             <div class="flex flex-col items-center cursor-pointer transform hover:scale-110 transition"
                 onclick="startTrade(0)">
