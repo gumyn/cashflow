@@ -711,12 +711,12 @@
                     // Choix : Manger (Gratuit, +Dentiste) ou Payer (Safe)
                     cost.innerHTML = `Choisis !`;
 
-                    btnSugar.innerHTML = `🍬 Miam!<br><span class="text-xs">Gratuit</span>`;
+                    btnSugar.innerHTML = `🍬 Miam! <span class="text-xs">Gratuit</span>`;
                     btnSugar.classList.remove('hidden');
 
                     const p = players[currentPlayerIndex];
                     if (p.money >= data.cost) {
-                        btnConfirm.innerHTML = `🥦 Payer<br><span class="text-2xl">-${data.cost}●</span>`;
+                        btnConfirm.innerHTML = `🥦 <span class="text-2xl">-${data.cost}<span class="coin text-2xl ml-1">●</span></span>`;
                         btnConfirm.classList.remove('hidden');
                         btnConfirm.disabled = false;
                         btnConfirm.classList.remove('opacity-50', 'cursor-not-allowed');
