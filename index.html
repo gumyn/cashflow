@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>La Course aux Rêves - Cashflow Kids</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            overflow: hidden;
+            /* Empêcher le scroll pour l'expérience "app" */
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
+
+        .float-anim {
+            animation: float 1.5s ease-out forwards;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pop-anim {
+            animation: pop 0.3s ease-in-out;
+        }
+
+        /* Design du plateau central */
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 4px;
+            width: 100%;
+            height: 100%;
+            max-width: 500px;
+            max-height: 500px;
+        }
+
+        /* Cases du chemin (boucle extérieure) */
+        .cell {
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Pions des joueurs */
+        .player-token {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            position: absolute;
+            transition: all 0.5s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* Zone centrale (dé) */
+        .center-zone {
+            grid-column: 2 / 6;
+            grid-row: 2 / 6;
+            background-color: #f0fdf4;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 4px dashed #cbd5e1;
+        }
+
+        .coin {
+            color: #fbbf24;
+            text-shadow: 0 2px 0 #d97706;
+        }
+    </style>
+</head>
+
+<body class="bg-blue-50 h-screen w-screen relative overflow-hidden">
+
+    <!-- Écran de configuration (Combien de joueurs ?) -->
+    <div id="setup-screen" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center p-4">
+        <h1 class="text-4xl text-blue-600 font-bold mb-8 text-center">La Course aux Rêves 🏰</h1>
+        <p class="text-xl text-gray-500 mb-6">Combien d'enfants jouent ?</p>
+        <div class="flex gap-4 mb-12">
+            <button onclick="startGame(2)"
+                class="w-20 h-20 rounded-2xl bg-blue-100 hover:bg-blue-200 border-4 border-blue-300 flex flex-col items-center justify-center text-3xl transition transform hover:scale-110">
+                <span>2</span>
+                <span class="text-sm">👶👶</span>
+            </button>
+            <button onclick="startGame(3)"
+                class="w-20 h-20 rounded-2xl bg-green-100 hover:bg-green-200 border-4 border-green-300 flex flex-col items-center justify-center text-3xl transition transform hover:scale-110">
+                <span>3</span>
+                <span class="text-sm">👶👶👶</span>
+            </button>
+            <button onclick="startGame(4)"
+                class="w-20 h-20 rounded-2xl bg-purple-100 hover:bg-purple-200 border-4 border-purple-300 flex flex-col items-center justify-center text-3xl transition transform hover:scale-110">
+                <span>4</span>
+                <span class="text-sm">👶x4</span>
+            </button>
+        </div>
+        <p class="text-gray-400 text-center max-w-md">
+            <i class="fas fa-info-circle mr-2"></i>Posez la tablette à plat sur la table. Chaque enfant s'assoit devant
+            un côté.
+        </p>
+    </div>
+
+    <!-- Écran de victoire -->
+    <div id="winner-screen"
+        class="hidden absolute inset-0 z-50 bg-yellow-100 flex flex-col items-center justify-center p-4 animate-fade-in">
+        <div class="text-6xl mb-4">🎉🏆🎉</div>
+        <h1 id="winner-name" class="text-4xl text-orange-600 font-bold mb-8 text-center">Bravo !</h1>
+        <div id="winner-dream" class="text-9xl mb-8">🏰</div>
+        <button onclick="location.reload()"
+            class="bg-blue-500 text-white px-8 py-4 rounded-full text-2xl font-bold shadow-lg hover:bg-blue-600">
+            Rejouer 🔄
+        </button>
+    </div>
+
+    <!-- Le Plateau de Jeu -->
+    <div id="game-container" class="hidden w-full h-full relative">
+
+        <!-- PLATEAU CENTRAL (Grille) -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div id="board" class="board-grid bg-white shadow-2xl rounded-xl p-2 pointer-events-auto">
+                <!-- Les cases seront générées par JS -->
+                <div class="center-zone relative">
+                    <!-- Zone centrale : Le Dé et les infos -->
+                    <div id="dice-container" class="text-center">
+                        <button id="dice-btn" onclick="rollDice()"
+                            class="w-24 h-24 bg-white border-4 border-blue-500 rounded-2xl shadow-xl flex items-center justify-center text-5xl cursor-pointer hover:bg-blue-50 transition transform active:scale-90 mb-2">
+                            🎲
+                        </button>
+                        <p class="text-gray-400 font-bold text-sm">TOUCHEZ !</p>
+                    </div>
+
+                    <!-- Modal d'Action (Achat/Paiement) qui apparaît au centre -->
+                    <div id="action-modal"
+                        class="hidden absolute inset-0 bg-white/95 backdrop-blur z-20 rounded-xl flex flex-col items-center justify-center p-2 text-center">
+                        <div id="modal-icon" class="text-6xl mb-2">🐔</div>
+                        <div id="modal-cost" class="text-3xl font-bold text-red-500 mb-4 flex items-center">
+                            -5 <span class="coin ml-1">●</span>
+                        </div>
+                        <div class="flex gap-4 w-full justify-center">
+                            <button onclick="closeModal(false)"
+                                class="w-12 h-12 bg-red-100 text-red-500 rounded-full text-2xl border-2 border-red-300">✖</button>
+                            <button id="btn-confirm" onclick="closeModal(true)"
+                                class="w-12 h-12 bg-green-100 text-green-600 rounded-full text-2xl border-2 border-green-300">✔</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ZONES DES JOUEURS (HUDs orientés) -->
+
+        <!-- Joueur 1 (Bas) -->
+        <div id="p1-hud"
+            class="absolute bottom-0 left-0 right-0 h-32 bg-red-50 border-t-4 border-red-300 flex items-center justify-between px-16 transition-opacity opacity-50">
+            <!-- Inventaire -->
+            <div class="flex flex-col items-center">
+                <span class="text-2xl">🐔</span>
+                <span id="p1-assets" class="font-bold text-xl">0</span>
+            </div>
+            <!-- Avatar & Argent -->
+            <div class="flex flex-col items-center transform -translate-y-4">
+                <div
+                    class="w-16 h-16 bg-red-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-1 relative">
+                    🐶
+                    <div id="p1-turn-indicator" class="hidden absolute -top-12 animate-bounce text-red-500 text-4xl">👇
+                    </div>
+                </div>
+                <div class="bg-white px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-2">
+                    <span class="coin text-xl">●</span>
+                    <span id="p1-money" class="font-bold text-2xl">5</span>
+                </div>
+            </div>
+            <!-- Objectif -->
+            <div class="flex flex-col items-center opacity-50 grayscale" id="p1-dream-container">
+                <span class="text-3xl">🏰</span>
+                <span class="font-bold text-sm text-gray-500">15<span class="coin">●</span></span>
+            </div>
+        </div>
+
+        <!-- Joueur 2 (Gauche) - Rotation 90deg -->
+        <div id="p2-hud"
+            class="absolute top-1/2 left-0 w-[75vh] h-32 bg-blue-50 border-t-4 border-blue-300 flex items-center justify-between px-16 transition-opacity opacity-50"
+            style="transform: translate(-45%, -50%) rotate(90deg); transform-origin: center;">
+            <div class="flex flex-col items-center">
+                <span class="text-2xl">🐔</span>
+                <span id="p2-assets" class="font-bold text-xl">0</span>
+            </div>
+            <div class="flex flex-col items-center transform -translate-y-4">
+                <div
+                    class="w-16 h-16 bg-blue-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-1 relative">
+                    🐱
+                    <div id="p2-turn-indicator" class="hidden absolute -top-12 animate-bounce text-blue-500 text-4xl">👇
+                    </div>
+                </div>
+                <div class="bg-white px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-2">
+                    <span class="coin text-xl">●</span>
+                    <span id="p2-money" class="font-bold text-2xl">5</span>
+                </div>
+            </div>
+            <div class="flex flex-col items-center opacity-50 grayscale" id="p2-dream-container">
+                <span class="text-3xl">🚀</span>
+                <span class="font-bold text-sm text-gray-500">15<span class="coin">●</span></span>
+            </div>
+        </div>
+
+        <!-- Joueur 3 (Haut) - Rotation 180deg -->
+        <div id="p3-hud"
+            class="hidden absolute top-0 left-0 right-0 h-32 bg-green-50 border-t-4 border-green-300 flex items-center justify-between px-16 transition-opacity opacity-50"
+            style="transform: rotate(180deg);">
+            <div class="flex flex-col items-center">
+                <span class="text-2xl">🐔</span>
+                <span id="p3-assets" class="font-bold text-xl">0</span>
+            </div>
+            <div class="flex flex-col items-center transform -translate-y-4">
+                <div
+                    class="w-16 h-16 bg-green-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-1 relative">
+                    🐸
+                    <div id="p3-turn-indicator" class="hidden absolute -top-12 animate-bounce text-green-500 text-4xl">
+                        👇</div>
+                </div>
+                <div class="bg-white px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-2">
+                    <span class="coin text-xl">●</span>
+                    <span id="p3-money" class="font-bold text-2xl">5</span>
+                </div>
+            </div>
+            <div class="flex flex-col items-center opacity-50 grayscale" id="p3-dream-container">
+                <span class="text-3xl">🦕</span>
+                <span class="font-bold text-sm text-gray-500">15<span class="coin">●</span></span>
+            </div>
+        </div>
+
+        <!-- Joueur 4 (Droite) - Rotation -90deg -->
+        <div id="p4-hud"
+            class="hidden absolute top-1/2 right-0 w-[75vh] h-32 bg-purple-50 border-t-4 border-purple-300 flex items-center justify-between px-16 transition-opacity opacity-50"
+            style="transform: translate(45%, -50%) rotate(-90deg); transform-origin: center;">
+            <div class="flex flex-col items-center">
+                <span class="text-2xl">🐔</span>
+                <span id="p4-assets" class="font-bold text-xl">0</span>
+            </div>
+            <div class="flex flex-col items-center transform -translate-y-4">
+                <div
+                    class="w-16 h-16 bg-purple-400 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-3xl mb-1 relative">
+                    🦄
+                    <div id="p4-turn-indicator" class="hidden absolute -top-12 animate-bounce text-purple-500 text-4xl">
+                        👇</div>
+                </div>
+                <div class="bg-white px-4 py-1 rounded-full border-2 border-yellow-400 shadow flex items-center gap-2">
+                    <span class="coin text-xl">●</span>
+                    <span id="p4-money" class="font-bold text-2xl">5</span>
+                </div>
+            </div>
+            <div class="flex flex-col items-center opacity-50 grayscale" id="p4-dream-container">
+                <span class="text-3xl">🎠</span>
+                <span class="font-bold text-sm text-gray-500">15<span class="coin">●</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Visuel Flottant -->
+    <div id="floating-text-container" class="absolute inset-0 pointer-events-none z-50"></div>
+
+    <script>
+        // --- Configuration du Jeu ---
+        const DREAM_COST = 15;
+        const INITIAL_MONEY = 4;
+
+        // Types de cases: 
+        // start (départ/paie), asset (poule), expense (bonbon), chance (cadeau), empty (rien)
+        const BOARD_LAYOUT = [
+            { type: 'start', icon: '💰', color: 'bg-yellow-200' }, // 0: Top Left
+            { type: 'expense', icon: '🍦', cost: 2, color: 'bg-red-100' },
+            { type: 'asset', icon: '🐔', cost: 5, income: 1, color: 'bg-green-100' },
+            { type: 'chance', icon: '🎁', color: 'bg-blue-100' },
+            { type: 'expense', icon: '🎈', cost: 1, color: 'bg-red-100' },
+            { type: 'chance', icon: '🎁', color: 'bg-blue-100' }, // 5: Top Right
+
+            { type: 'asset', icon: '🚜', cost: 6, income: 2, color: 'bg-green-100' }, // 6: Right side...
+            { type: 'expense', icon: '🧸', cost: 3, color: 'bg-red-100' },
+            { type: 'chance', icon: '🎁', color: 'bg-blue-100' },
+
+            { type: 'start', icon: '⭐', color: 'bg-yellow-200' }, // 9: Bottom Right (Pseudo corner logic handled by grid map below)
+            { type: 'asset', icon: '🐔', cost: 5, income: 1, color: 'bg-green-100' },
+            { type: 'expense', icon: '🍩', cost: 2, color: 'bg-red-100' },
+            { type: 'chance', icon: '🎁', color: 'bg-blue-100' },
+            { type: 'asset', icon: '🤖', cost: 7, income: 3, color: 'bg-green-100' },
+            { type: 'expense', icon: '🍟', cost: 2, color: 'bg-red-100' },
+
+            { type: 'start', icon: '💰', color: 'bg-yellow-200' }, // Bottom Left
+            { type: 'chance', icon: '🎁', color: 'bg-blue-100' },
+            { type: 'asset', icon: '🐔', cost: 5, income: 1, color: 'bg-green-100' },
+            { type: 'expense', icon: '🍭', cost: 1, color: 'bg-red-100' },
+            { type: 'chance', icon: '🎁', color: 'bg-blue-100' },
+        ];
+
+        // Mapping visuel pour faire une boucle autour de la grille 6x6
+        // Indices CSS Grid: Col / Row
+        const GRID_PATH = [
+            { c: 1, r: 1 }, { c: 2, r: 1 }, { c: 3, r: 1 }, { c: 4, r: 1 }, { c: 5, r: 1 }, { c: 6, r: 1 },
+            { c: 6, r: 2 }, { c: 6, r: 3 }, { c: 6, r: 4 }, { c: 6, r: 5 }, { c: 6, r: 6 },
+            { c: 5, r: 6 }, { c: 4, r: 6 }, { c: 3, r: 6 }, { c: 2, r: 6 }, { c: 1, r: 6 },
+            { c: 1, r: 5 }, { c: 1, r: 4 }, { c: 1, r: 3 }, { c: 1, r: 2 }
+        ];
+
+        let players = [];
+        let currentPlayerIndex = 0;
+        let isAnimating = false;
+
+        // --- Initialisation ---
+
+        function startGame(numPlayers) {
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-container').classList.remove('hidden');
+
+            // Création des joueurs
+            const configs = [
+                { id: 1, color: 'bg-red-400', icon: '🐶', dream: '🏰' },
+                { id: 2, color: 'bg-blue-400', icon: '🐱', dream: '🚀' },
+                { id: 3, color: 'bg-green-400', icon: '🐸', dream: '🦕' },
+                { id: 4, color: 'bg-purple-400', icon: '🦄', dream: '🎠' }
+            ];
+
+            for (let i = 0; i < numPlayers; i++) {
+                players.push({
+                    ...configs[i],
+                    money: INITIAL_MONEY,
+                    assets: 0, // Nombre de poules/actifs
+                    pos: 0,
+                    income: 1 // Salaire de base
+                });
+                // Afficher le HUD
+                document.getElementById(`p${i + 1}-hud`).classList.remove('hidden');
+                document.getElementById(`p${i + 1}-hud`).classList.add('flex');
+            }
+
+            renderBoard();
+            updateAllHUDs();
+            startTurn();
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('board');
+
+            // Générer les cases
+            GRID_PATH.forEach((pos, index) => {
+                const cellData = BOARD_LAYOUT[index % BOARD_LAYOUT.length];
+                const div = document.createElement('div');
+                div.className = `cell ${cellData.color}`;
+                div.style.gridColumn = pos.c;
+                div.style.gridRow = pos.r;
+                div.innerHTML = `<span>${cellData.icon}</span>`;
+                div.id = `cell-${index}`;
+                board.appendChild(div);
+            });
+
+            // Placer les pions au départ
+            players.forEach((p, idx) => {
+                createPlayerToken(idx);
+            });
+        }
+
+        function createPlayerToken(playerIdx) {
+            const token = document.createElement('div');
+            token.className = `player-token ${players[playerIdx].color}`;
+            token.innerHTML = players[playerIdx].icon;
+            token.id = `token-${playerIdx}`;
+            document.getElementById('board').appendChild(token);
+            moveTokenVisual(playerIdx, 0);
+        }
+
+        function moveTokenVisual(playerIdx, boardIndex) {
+            const token = document.getElementById(`token-${playerIdx}`);
+            const cell = document.getElementById(`cell-${boardIndex}`);
+            const rectBoard = document.getElementById('board').getBoundingClientRect();
+            const rectCell = cell.getBoundingClientRect();
+
+            // Calcul relatif au plateau pour ne pas casser lors du resize
+            // On centre le token dans la cellule, avec un petit décalage selon le joueur pour qu'ils ne se superposent pas trop
+            const offset = [
+                { x: -5, y: -5 }, { x: 5, y: -5 }, { x: 5, y: 5 }, { x: -5, y: 5 }
+            ];
+
+            // Position relative dans la grille CSS
+            // Une solution simple est d'append le token DANS la cellule, mais ça casse l'animation fluide inter-cellule
+            // On va utiliser le positionnement absolu basé sur la grille
+
+            const cellWidth = cell.offsetWidth;
+            const cellHeight = cell.offsetHeight;
+            const cellLeft = cell.offsetLeft;
+            const cellTop = cell.offsetTop;
+
+            token.style.left = (cellLeft + cellWidth / 2 - 12 + offset[playerIdx].x) + 'px';
+            token.style.top = (cellTop + cellHeight / 2 - 12 + offset[playerIdx].y) + 'px';
+        }
+
+        // --- Logique de Jeu ---
+
+        function startTurn() {
+            isAnimating = false;
+            // Highlight current player HUD
+            players.forEach((p, idx) => {
+                const hud = document.getElementById(`p${idx + 1}-hud`);
+                const indicator = document.getElementById(`p${idx + 1}-turn-indicator`);
+                if (idx === currentPlayerIndex) {
+                    hud.classList.remove('opacity-50');
+                    hud.classList.add('opacity-100', 'scale-105', 'z-20');
+                    indicator.classList.remove('hidden');
+                } else {
+                    hud.classList.add('opacity-50');
+                    hud.classList.remove('opacity-100', 'scale-105', 'z-20');
+                    indicator.classList.add('hidden');
+                }
+            });
+
+            const diceBtn = document.getElementById('dice-btn');
+            diceBtn.innerHTML = '🎲';
+            diceBtn.disabled = false;
+            diceBtn.classList.remove('opacity-50');
+        }
+
+        function rollDice() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const diceBtn = document.getElementById('dice-btn');
+            diceBtn.disabled = true;
+
+            // Animation simple du dé
+            let rolls = 0;
+            const interval = setInterval(() => {
+                diceBtn.innerText = Math.floor(Math.random() * 6) + 1;
+                rolls++;
+                if (rolls > 10) {
+                    clearInterval(interval);
+                    const result = Math.floor(Math.random() * 6) + 1; // 1-6
+                    // Pour les petits, on peut limiter à 1-3 pour que ça dure plus longtemps ? 
+                    // Gardons 1-6 mais le plateau est court (20 cases).
+                    diceBtn.innerText = result;
+                    movePlayerSteps(result);
+                }
+            }, 50);
+        }
+
+        function movePlayerSteps(steps) {
+            let p = players[currentPlayerIndex];
+            let stepsLeft = steps;
+
+            const stepInterval = setInterval(() => {
+                if (stepsLeft > 0) {
+                    p.pos = (p.pos + 1) % GRID_PATH.length;
+
+                    // Passage par la case départ (Payday)
+                    // Note: L'index 0 est le départ. Si on passe de length-1 à 0.
+                    if (p.pos === 0) {
+                        triggerPayday(p);
+                    }
+
+                    moveTokenVisual(currentPlayerIndex, p.pos);
+                    stepsLeft--;
+                    playSound('step');
+                } else {
+                    clearInterval(stepInterval);
+                    handleLandOnCell();
+                }
+            }, 400);
+        }
+
+        function triggerPayday(player) {
+            // Salaire + Actifs
+            const income = player.income + player.assets;
+            player.money += income;
+            showFloatingText(`+${income}💰`, `token-${currentPlayerIndex}`, 'text-yellow-500');
+            updateAllHUDs();
+            playSound('coin');
+        }
+
+        function handleLandOnCell() {
+            const p = players[currentPlayerIndex];
+            const cellData = BOARD_LAYOUT[p.pos % BOARD_LAYOUT.length];
+
+            if (cellData.type === 'asset') {
+                // Opportunité d'achat
+                if (p.money >= cellData.cost) {
+                    openModal('buy', cellData);
+                } else {
+                    showFloatingText("Pas assez d'argent 😢", `token-${currentPlayerIndex}`, 'text-gray-500');
+                    setTimeout(nextTurn, 1500);
+                }
+            } else if (cellData.type === 'expense') {
+                // Paiement obligatoire
+                openModal('pay', cellData);
+            } else if (cellData.type === 'chance') {
+                // Petit bonus aléatoire
+                const bonus = Math.floor(Math.random() * 3) + 1;
+                p.money += bonus;
+                showFloatingText(`Cadeau ! +${bonus}💰`, `token-${currentPlayerIndex}`, 'text-blue-500');
+                updateAllHUDs();
+                setTimeout(nextTurn, 1500);
+            } else {
+                // Case départ ou vide
+                setTimeout(nextTurn, 1000);
+            }
+        }
+
+        // --- Gestion des Modales (Interactions) ---
+
+        let currentModalAction = null;
+        let currentCellData = null;
+
+        function openModal(action, data) {
+            const modal = document.getElementById('action-modal');
+            const icon = document.getElementById('modal-icon');
+            const cost = document.getElementById('modal-cost');
+            const btnConfirm = document.getElementById('btn-confirm');
+
+            currentModalAction = action;
+            currentCellData = data;
+
+            icon.innerHTML = data.icon;
+            modal.classList.remove('hidden');
+
+            // Rotation de la modale vers le joueur actif
+            let rotation = 0;
+            if (currentPlayerIndex === 1) rotation = 90;
+            if (currentPlayerIndex === 2) rotation = 180;
+            if (currentPlayerIndex === 3) rotation = -90;
+            modal.style.transform = `rotate(${rotation}deg)`;
+
+            if (action === 'buy') {
+                // Achat Actif
+                cost.innerHTML = `-${data.cost} <span class="coin">●</span> <br><span class="text-sm text-green-600">Donne +${data.income}/tour</span>`;
+                btnConfirm.classList.remove('hidden');
+            } else if (action === 'pay') {
+                // Dépense
+                cost.innerHTML = `-${data.cost} <span class="coin">●</span>`;
+                btnConfirm.innerHTML = '✔'; // Juste OK
+                // Cacher le bouton croix car c'est obligatoire, ou juste laisser confirmer
+                document.querySelector('#action-modal button:first-child').classList.add('hidden');
+            }
+        }
+
+        function closeModal(confirmed) {
+            const modal = document.getElementById('action-modal');
+            modal.classList.add('hidden');
+            document.querySelector('#action-modal button:first-child').classList.remove('hidden'); // Reset cancel button
+
+            const p = players[currentPlayerIndex];
+
+            if (currentModalAction === 'buy') {
+                if (confirmed) {
+                    p.money -= currentCellData.cost;
+                    p.assets += currentCellData.income; // On simplifie: assets = revenu sup
+                    showFloatingText("Investissement ! 🐔", `token-${currentPlayerIndex}`, 'text-green-600');
+                    playSound('buy');
+                }
+            } else if (currentModalAction === 'pay') {
+                if (confirmed) { // Obligatoire de toute façon
+                    p.money -= currentCellData.cost;
+                    if (p.money < 0) p.money = 0;
+                    showFloatingText("Aïe ! 💸", `token-${currentPlayerIndex}`, 'text-red-500');
+                    playSound('pay');
+                }
+            }
+
+            updateAllHUDs();
+            checkWinCondition();
+        }
+
+        function checkWinCondition() {
+            const p = players[currentPlayerIndex];
+            // Condition de victoire : Avoir assez d'argent pour le Rêve
+            // Ici, pour simplifier pour les enfants, on ajoute un bouton "Acheter le rêve" dans le HUD si on a l'argent ? 
+            // Ou on checke automatiquement à la fin du tour ?
+
+            // Faisons automatique : Si à la fin du tour le joueur a >= DREAM_COST
+            if (p.money >= DREAM_COST) {
+                setTimeout(() => {
+                    document.getElementById('winner-screen').classList.remove('hidden');
+                    document.getElementById('winner-name').innerText = `JOUEUR ${currentPlayerIndex + 1} GAGNE !`;
+                    document.getElementById('winner-dream').innerHTML = p.dream;
+                    playSound('win');
+                }, 500);
+            } else {
+                setTimeout(nextTurn, 500);
+            }
+        }
+
+        function nextTurn() {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            startTurn();
+        }
+
+        function updateAllHUDs() {
+            players.forEach((p, idx) => {
+                document.getElementById(`p${idx + 1}-money`).innerText = p.money;
+                document.getElementById(`p${idx + 1}-assets`).innerText = p.assets;
+
+                // Feedback visuel si proche du but
+                const dreamCont = document.getElementById(`p${idx + 1}-dream-container`);
+                if (p.money >= DREAM_COST) {
+                    dreamCont.classList.remove('opacity-50', 'grayscale');
+                    dreamCont.classList.add('animate-pulse');
+                } else {
+                    dreamCont.classList.add('opacity-50', 'grayscale');
+                    dreamCont.classList.remove('animate-pulse');
+                }
+            });
+        }
+
+        // --- Utilitaires ---
+
+        function showFloatingText(text, targetId, colorClass) {
+            const target = document.getElementById(targetId);
+            const rect = target.getBoundingClientRect();
+
+            const el = document.createElement('div');
+            el.className = `absolute text-2xl font-bold ${colorClass} float-anim pointer-events-none z-50`;
+            el.innerHTML = text;
+            el.style.left = rect.left + 'px';
+            el.style.top = rect.top + 'px';
+
+            document.getElementById('floating-text-container').appendChild(el);
+            setTimeout(() => el.remove(), 1500);
+        }
+
+        // Système de son synthétique simple pour ne pas dépendre de fichiers externes
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (type === 'step') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'coin') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(1600, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'win') {
+                osc.type = 'triangle';
+                // Arpeggio simple
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.2);
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.4);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1);
+            }
+        }
+
+        // Resize handler pour repositionner les pions
+        window.addEventListener('resize', () => {
+            players.forEach((p, idx) => {
+                moveTokenVisual(idx, p.pos);
+            });
+        });
+
+    </script>
+</body>
+
+</html>
