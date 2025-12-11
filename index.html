@@ -693,15 +693,26 @@
                     btnSugar.classList.add('hidden');
                     btnConfirm.innerHTML = '✔';
                     btnConfirm.classList.remove('hidden');
-                } else {
                     // Choix : Manger (Gratuit, +Dentiste) ou Payer (Safe)
                     cost.innerHTML = `Choisis !`;
 
                     btnSugar.innerHTML = `🍬 Miam!<br><span class="text-xs">Gratuit</span>`;
                     btnSugar.classList.remove('hidden');
 
-                    btnConfirm.innerHTML = `🥦 Payer<br><span class="text-xs">-${data.cost}●</span>`;
-                    btnConfirm.classList.remove('hidden');
+                    const p = players[currentPlayerIndex];
+                    if (p.money >= data.cost) {
+                        btnConfirm.innerHTML = `🥦 Payer<br><span class="text-xs">-${data.cost}●</span>`;
+                        btnConfirm.classList.remove('hidden');
+                        btnConfirm.disabled = false;
+                        btnConfirm.classList.remove('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        // Pas assez d'argent : Forcé de manger le bonbon
+                        btnConfirm.innerHTML = `🥦 Payer<br><span class="text-xs">-${data.cost}●</span>`;
+                        btnConfirm.classList.remove('hidden');
+                        btnConfirm.disabled = true;
+                        btnConfirm.classList.add('opacity-50', 'cursor-not-allowed');
+                        cost.innerHTML += `<br><span class="text-xs text-red-400">(Pas assez de sous !)</span>`;
+                    }
                 }
                 // Cacher le bouton croix car c'est obligatoire
                 document.querySelector('#action-modal button:first-child').classList.add('hidden');
@@ -821,12 +832,12 @@
             document.getElementById('trade-step-2').classList.add('hidden');
             document.getElementById('trade-price-display').innerText = '0';
 
-            // Rotation
-            let rotation = 0;
-            if (currentPlayerIndex === 1) rotation = 90;
-            if (currentPlayerIndex === 2) rotation = 180;
-            if (currentPlayerIndex === 3) rotation = -90;
-            document.getElementById('trade-modal').style.transform = `rotate(${rotation}deg)`;
+            // // Rotation
+            // let rotation = 0;
+            // if (currentPlayerIndex === 1) rotation = 90;
+            // if (currentPlayerIndex === 2) rotation = 180;
+            // if (currentPlayerIndex === 3) rotation = -90;
+            // document.getElementById('trade-modal').style.transform = `rotate(${rotation}deg)`;
         }
 
         function updateTradePrice(val) {
