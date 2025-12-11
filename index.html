@@ -162,7 +162,7 @@
     </div>
 
     <!-- Le Plateau de Jeu -->
-    <div id="game-container" class="-top-10 hidden w-full h-full relative">
+    <div id="game-container" class="top-10 hidden w-full h-full relative">
 
         <!-- PLATEAU CENTRAL (Grille) -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -191,9 +191,11 @@
                             <button id="btn-sugar" onclick="closeModal(false, true)"
                                 class="hidden w-12 h-12 bg-pink-100 text-pink-500 rounded-full text-2xl border-2 border-pink-300">🍬</button>
                             <button id="btn-sugar" onclick="closeModal(false, true)"
-                                class="hidden w-12 h-12 bg-pink-100 text-pink-500 rounded-full text-2xl border-2 border-pink-300">🍬</button>
+                                class="hidden w-24 h-12 bg-pink-100 text-pink-600 rounded-xl text-lg font-bold border-2 border-pink-300">🍬
+                                0</button>
                             <button id="btn-confirm" onclick="closeModal(true)"
-                                class="w-12 h-12 bg-green-100 text-green-600 rounded-full text-2xl border-2 border-green-300">✔</button>
+                                class="w-24 h-12 bg-green-100 text-green-600 rounded-xl text-lg font-bold border-2 border-green-300">🥦
+                                Payer</button>
                         </div>
                     </div>
 
@@ -666,19 +668,13 @@
             const icon = document.getElementById('modal-icon');
             const cost = document.getElementById('modal-cost');
             const btnConfirm = document.getElementById('btn-confirm');
+            const btnSugar = document.getElementById('btn-sugar');
 
             currentModalAction = action;
             currentCellData = data;
 
             icon.innerHTML = data.icon;
             modal.classList.remove('hidden');
-
-            // // Rotation de la modale vers le joueur actif
-            // let rotation = 0;
-            // if (currentPlayerIndex === 1) rotation = 90;
-            // if (currentPlayerIndex === 2) rotation = 180;
-            // if (currentPlayerIndex === 3) rotation = -90;
-            // modal.style.transform = `rotate(${rotation}deg)`;
 
             if (action === 'buy') {
                 // Achat Actif
@@ -687,19 +683,27 @@
                 } else {
                     cost.innerHTML = `-${data.cost} <span class="coin">●</span> <br><span class="text-sm text-green-600">Donne +${data.income}/tour</span>`;
                 }
+                btnConfirm.innerHTML = '✔';
                 btnConfirm.classList.remove('hidden');
+                btnSugar.classList.add('hidden');
             } else if (action === 'pay') {
                 // Dépense
                 if (data.isDentist) {
                     cost.innerHTML = `-${data.cost} <span class="coin">●</span> <br><span class="text-sm text-red-600 font-bold">DENTISTE 🦷<br>(Trop de bonbons !)</span>`;
-                    document.getElementById('btn-sugar').classList.add('hidden');
+                    btnSugar.classList.add('hidden');
+                    btnConfirm.innerHTML = '✔';
+                    btnConfirm.classList.remove('hidden');
                 } else {
-                    cost.innerHTML = `-${data.cost} <span class="coin">●</span>`;
-                    // Option payer 1 pièce pour éviter le dentiste
-                    document.getElementById('btn-sugar').classList.remove('hidden');
+                    // Choix : Manger (Gratuit, +Dentiste) ou Payer (Safe)
+                    cost.innerHTML = `Choisis !`;
+
+                    btnSugar.innerHTML = `🍬 Miam!<br><span class="text-xs">Gratuit</span>`;
+                    btnSugar.classList.remove('hidden');
+
+                    btnConfirm.innerHTML = `🥦 Payer<br><span class="text-xs">-${data.cost}●</span>`;
+                    btnConfirm.classList.remove('hidden');
                 }
-                btnConfirm.innerHTML = '✔'; // Juste OK
-                // Cacher le bouton croix car c'est obligatoire, ou juste laisser confirmer
+                // Cacher le bouton croix car c'est obligatoire
                 document.querySelector('#action-modal button:first-child').classList.add('hidden');
             }
         }
